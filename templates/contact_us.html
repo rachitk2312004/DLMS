@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Campus Bites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Contact Us Page Styles */
+        .contact-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            height: auto;
+        }
+
+        .contact-container h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-container p {
+            font-size: 1.1rem;
+            color: #555555;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-form label {
+            font-size: 1.1rem;
+            color: #333333;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 1rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: #2c3e50;
+            box-shadow: 0 0 5px rgba(44, 62, 80, 0.5);
+        }
+
+        .contact-form button {
+            padding: 1rem;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .contact-form button:hover {
+            background-color: #34495e;
+        }
+
+        .contact-container a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-container a:hover {
+            text-decoration: underline;
+        }
+
+        /* Flash Message Styling */
+        .alert {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: opacity 1s ease-out; /* Add a fade-out effect */
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <main class="contact-container">
+        <!-- Flash messages for user feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h1>Contact Us</h1>
+        <p>We’d love to hear from you! Whether you have a question, feedback, or just want to say hi, feel free to reach out.</p>
+        <form action="{{ url_for('contact_us') }}" method="post" class="contact-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Your Name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Your Email" required>
+            
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
+            
+            <button type="submit" class="button-primary">Send Message</button>
+        </form>
+        <p>You can also email us directly at <a href="mailto:eventanddutyleave.ms@gmail.com">eventanddutyleave.ms@gmail.com</a></p>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('index') }}">Home</a> | 
+                <a href="{{ url_for('about_us') }}">About Us</a> | 
+                <a href="{{ url_for('contact_us') }}">Contact Us</a> | 
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</body>
+</html>

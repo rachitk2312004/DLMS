@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Flash Message Styles */
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            transition: opacity 1s ease-out; /* Add a fade-out effect */
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Container Styling */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            height: 70vh;
+        }
+
+        /* Welcome Title */
+        .container h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        /* Subtitle or User Info */
+        .container p {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            margin: 20px 0;
+        }
+
+        /* Button Styling */
+        .choice_button {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .choice_button:hover {
+            background: linear-gradient(90deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+        }
+
+        .logout-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            background-color: #e74c3c;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+
+            .choice_button, .logout-button {
+                width: 100%;
+                padding: 15px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1>Welcome {{ name }} (UID: {{ uid }})</h1>
+        <p>Welcome to your student dashboard, where you can easily manage your duties and events.</p>
+
+        <div class="dashboard-section">
+            <a href="/apply_duty_leave" class="choice_button">Apply for Duty Leave</a>
+        </div>
+
+        <div class="dashboard-section">
+            <a href="/join_event" class="choice_button">Join an Event</a>
+        </div>
+
+        <a href="/logout" class="logout-button">Logout</a>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</body>
+</html>

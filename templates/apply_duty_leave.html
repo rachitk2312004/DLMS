@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Duty Leave</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Container */
+        .container {
+            width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+        }
+
+        /* Form Section */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Form Group */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #3498db;
+        }
+
+        /* Button Styles */
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Disabled Button */
+        .disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Applied Leaves Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        table td {
+            background-color: #f9f9f9;
+        }
+
+        table td.remarks {
+            color: #555;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+
+            h2, h3 {
+                font-size: 20px;
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 14px;
+            }
+
+            .button {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+
+        .back-button-container {
+            display: flex;
+            justify-content: center; /* Centers the button horizontally */
+            margin-top: 20px; /* Adds spacing above the container */
+        }
+
+        .back-button {
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2 style="text-align: center;">Apply for Duty Leave</h2>
+        
+        <!-- Form 1: Select Date -->
+        <form id="select-date-form" method="POST" class="form-section">
+            <div class="form-group">
+                <label for="date">Select Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <button type="submit" class="button">Submit Date</button>
+        </form>
+
+        <!-- Form 2: Select Event and Apply -->
+        <form id="apply-leave-form" method="POST" action="/apply_duty_leave" class="form-section" style="margin-top: 30px;">
+            <div class="form-group">
+                <label for="event">Select Event:</label>
+                <select id="event" name="event" required disabled>
+                    <option value="" disabled selected>Select Event</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="time_slots">Select Time Slots:</label>
+                <select id="time_slots" name="time_slots" multiple required>
+                    <option value="full_day">Full Day (9:30 AM - 4:25 PM)</option>
+                    <option value="9:30-10:20">09:30 AM - 10:20 AM</option>
+                    <option value="10:20-11:10">10:20 AM - 11:10 AM</option>
+                    <option value="11:20-12:10">11:20 AM - 12:10 PM</option>
+                    <option value="12:10-13:00">12:10 PM - 01:00 PM</option>
+                    <option value="13:05-13:55">01:05 PM - 01:55 PM</option>
+                    <option value="13:55-14:45">01:55 PM - 02:45 PM</option>
+                    <option value="14:45-15:35">02:45 PM - 03:35 PM</option>
+                    <option value="15:35-16:25">03:35 PM - 04:25 PM</option>
+                    <option value="17:00-17:30">05:00 PM - 5:30 PM</option>
+                    <option value="16:50-17:00">04:50 PM - 5:00 PM</option>
+                </select>
+            </div>
+            <button type="submit" class="button disabled" id="apply-button" disabled>Apply for Leave</button>
+        </form>
+        <br>
+
+        <h3>Applied Duty Leave Records</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Time Slots</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in applied_leaves %}
+                    <tr>
+                        <td>{{ record[0] }}</td>
+                        <td>{{ record[2] }}</td>
+                        <td>{{ record[1] }}</td>
+                        <td>{{ record[3] }}</td>
+                        <td class="remarks">{{ record[4] if record[4] else "N/A" }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No duty leaves applied yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Navigation to Student Dashboard -->
+        <div class="back-button-container">
+            <a href="{{ url_for('student_dashboard') }}" class="back-button">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+
+        // Event listener for the date selection form
+        document.getElementById('select-date-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const date = document.getElementById('date').value;
+
+            // Make the request to fetch events based on the selected date
+            fetch('/fetch-events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.events && data.events.length > 0) {
+                    const eventDropdown = document.getElementById('event');
+                    eventDropdown.innerHTML = '<option value="" disabled selected>Select Event</option>';
+
+                    // Populate event options
+                    data.events.forEach(event => {
+                        const option = document.createElement('option');
+                        option.value = event.id;
+                        option.textContent = `${event.name} (${event.start_time} - ${event.end_time})`;
+                        eventDropdown.appendChild(option);
+                    });
+
+                    // Enable the event dropdown and the apply button
+                    eventDropdown.disabled = false;
+                    document.getElementById('apply-button').classList.remove('disabled');
+                    document.getElementById('apply-button').disabled = false;
+                } else {
+                    alert('No events found for the selected date.');
+                }
+            })
+            .catch(err => alert('Error fetching events.'));
+        });
+    </script>
+</body>
+</html>

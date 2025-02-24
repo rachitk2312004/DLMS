@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Styling */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .back-button {
+            display: block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 style="text-align: center;">Create New Event</h1>
+
+        <!-- Flash messages for user feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="/create_event" method="POST" class="form-section" id="createEventForm">
+            <!-- Event Name and Event Type -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="event_name">Event Name:</label>
+                    <input type="text" id="event_name" name="event_name" required placeholder="Enter event name">
+                </div>
+                <div class="form-group">
+                    <label for="event_type">Event Type:</label>
+                    <select id="event_type" name="event_type" required>
+                        <option value="" disabled selected>Select event type</option>
+                        <option value="Coding">Coding</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Hackathon">Hackathon</option>
+                        <option value="Ideation">Ideation</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Date and Time -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" id="start_time" name="start_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_time">End Time:</label>
+                    <input type="time" id="end_time" name="end_time" required>
+                </div>
+            </div>
+
+            <!-- Venue and Max Students -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="venue">Venue:</label>
+                    <input type="text" id="venue" name="venue" required placeholder="Enter venue">
+                </div>
+                <div class="form-group">
+                    <label for="max_students">Max Students:</label>
+                    <input type="number" id="max_students" name="max_students" required
+                        placeholder="Enter max number of students" min="1">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit" class="button">Create Event</button>
+            </div>
+        </form>
+
+        <!-- Back to Dashboard -->
+        <a href="{{ url_for('coordinator_dashboard') }}" class="back-button">Back to Dashboard</a>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+
+            document.getElementById('start_time').addEventListener('change', function () {
+                document.getElementById('end_time').min = this.value;
+            });
+
+            document.getElementById('createEventForm').addEventListener('submit', function (event) {
+                const endTime = document.getElementById('end_time').value;
+                const startTime = document.getElementById('start_time').value;
+                if (endTime <= startTime) {
+                    alert("End time must be after start time.");
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

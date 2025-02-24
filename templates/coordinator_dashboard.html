@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinator Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='cd.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1>Welcome, {{ name }} (Coordinator)</h1>
+
+        <!-- Event Creation Section -->
+        <div class="dashboard-section">
+            <h2>Create a New Event</h2>
+            <a href="/create_event" class="choice_button">Create Event</a>
+        </div>
+
+        <!-- Scheduled Events Section -->
+        <div class="dashboard-section">
+            <h2>Scheduled Events
+                {% if scheduled_events %}
+                    <button class="toggle-button" onclick="toggleList('scheduled-events')">Show</button>
+                {% endif %}
+            </h2>
+            {% if scheduled_events %}
+                <table class="event-table" id="scheduled-events">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Event Type</th>
+                            <th>Venue</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Max Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in scheduled_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.event_type }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.start_time }}</td>
+                            <td>{{ event.end_time }}</td>
+                            <td>{{ event.max_students }}</td>
+                            <td>
+                                {% if event.registration_count < event.max_students %}
+                                    <a href="/view_event_registrations/{{ event.id }}" class="button">Registrations</a>
+                                {% else %}
+                                    <span class="event-full">Event Full</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-events">No scheduled events.</p>
+            {% endif %}
+        </div>
+
+        <!-- Live Events Section -->
+        <div class="dashboard-section">
+            <h2>Live Events
+                {% if live_events %}
+                    <button class="toggle-button" onclick="toggleList('live-events')">Show</button>
+                {% endif %}
+            </h2>
+            {% if live_events %}
+                <table class="event-table" id="live-events">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Venue</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Max Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in live_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.start_time }}</td>
+                            <td>{{ event.end_time }}</td>
+                            <td>{{ event.max_students }}</td>
+                            <td>
+                                <a href="/view_event_registrations/{{ event.id }}" class="button">Registrations</a>
+                                <a href="/mark_attendance/{{ event.id }}" class="button">Mark Attendance</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-events">No live events.</p>
+            {% endif %}
+        </div>
+
+        <!-- Past Events Section -->
+        <div class="dashboard-section">
+            <h2>Past Events
+                {% if past_events %}
+                    <button class="toggle-button bcd" onclick="toggleList('past-events')">Show</button>
+                {% endif %}
+            </h2>
+            {% if past_events %}
+                <table class="event-table" id="past-events">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Venue</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in past_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.start_time }}</td>
+                            <td>{{ event.end_time }}</td>
+                            <td>
+                                <a href="/view_event_registrations/{{ event.id }}" class="button">Registrations</a>
+                                <a href="/view_attendance/{{ event.id }}" class="button">Attendance</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-events">No past events.</p>
+            {% endif %}
+        </div>
+
+        <!-- Validate Duty Leave -->
+        <div class="dashboard-section">
+            <h2>Validate Duty Leave Applications</h2>
+            <a href="/validate_duty_leave" class="choice_button">Validate Leave</a>
+        </div>
+
+        <!-- Logout Section -->
+        <div class="logout-section">
+            <a href="/logout" class="logout-button">Logout</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+
+        // Function to toggle event lists
+        function toggleList(listId) {
+            const list = document.getElementById(listId);
+            const toggleButton = list.previousElementSibling.querySelector('.toggle-button');
+            if (list.classList.contains('visible')) {
+                list.classList.remove('visible');
+                toggleButton.textContent = 'Show';
+            } else {
+                list.classList.add('visible');
+                toggleButton.textContent = 'Hide';
+            }
+        }
+    </script>
+</body>
+</html>

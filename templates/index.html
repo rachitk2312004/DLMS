@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duty Leave Management - Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <!-- Landing Page Layout -->
+    <main class="landing-container">
+        <!-- Left Section: Welcome Text -->
+        <div class="text-section">
+            <h1>Welcome to the Event and Duty Leave Management System</h1>
+            <p>Effortlessly manage and track your duty leave applications. Simplified and streamlined for students and coordinators alike.</p>
+            <h2>Start your journey:</h2>
+
+            <!-- Role Selection Buttons -->
+            <div class="button-group">
+                <!-- Navigate to Student Page -->
+                <a href="{{ url_for('login_student') }}" class="button-primary">I’m a Student</a>
+                <!-- Navigate to Coordinator Page -->
+                <a href="{{ url_for('login_coordinator') }}" class="button-secondary">I’m a Coordinator</a>
+            </div>
+        </div>
+
+        <!-- Right Section: Background Image -->
+        <div class="image-section">
+            <div class="overlay"></div>
+        </div>
+    </main>
+    <section class="feature-section">
+        <h2 class="feature-section-title">Event and Duty Leave Management System: Streamlining Student and Coordinator Operations</h2>
+        <div class="feature-cards-container">
+            <div class="feature-card">
+                <h3>Efficient Leave Request Process</h3>
+                <ul>
+                    <li>Submit leave applications with ease.</li>
+                    <li>Automated approval workflows for coordinators.</li>
+                    <li>Instant notifications for application status updates.</li>
+                    <li>Track leave history for better management.</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h3>Real-Time Leave Tracking</h3>
+                <ul>
+                    <li>Stay updated on pending and approved leave requests.</li>
+                    <li>View real-time status of each leave application.</li>
+                    <li>Quickly identify leave trends and patterns.</li>
+                    <li>Efficient resource planning for coordinators.</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h3>Customizable Notifications & Alerts</h3>
+                <ul>
+                    <li>Get notified about pending leave approvals or rejections.</li>
+                    <li>Receive reminders for upcoming or expired leaves.</li>
+                    <li>Automatic email or in-app alerts for important updates.</li>
+                    <li>Ensure all stakeholders are always informed.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('index') }}">Home</a> | 
+                <a href="{{ url_for('about_us') }}">About Us</a> | 
+                <a href="{{ url_for('contact_us') }}">Contact Us</a> | 
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+    
+</body>
+</html>

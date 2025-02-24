@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validate Duty Leave</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* General styling for container */
+        .container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            height: 60vh;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Button styling */
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+            width: 180px;
+            text-align: center;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Centering the back button container */
+        .back-button-container {
+            display: flex;
+            justify-content: center;  /* Centers the button horizontally */
+            margin-top: 20px;         /* Adds spacing above the container */
+        }
+
+        .footer-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Disabled Button */
+        .disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Flash Message Styles */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 16px;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 style="text-align: center;">Validate Duty Leave Applications</h1>
+        <br>
+
+        <!-- Flash messages section -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form 1: Select Date -->
+        <form id="select-date-form" method="POST" class="form-section">
+            <label for="date">Select Date for Validation:</label>
+            <input type="date" id="date" name="date" required>
+            <br>
+            <button type="submit" class="button">Fetch Events</button>
+        </form>
+
+        <!-- Form 2: Select Event and Apply -->
+        <form id="apply-leave-form" method="POST" action="/validate_duty_leave" class="form-section">
+            <div class="form-group">
+                <label for="event">Select Event:</label>
+                <select id="event" name="event" required disabled>
+                    <option value="" disabled selected>Select Event</option>
+                </select>
+            </div>
+            <button type="submit" class="button disabled" id="apply-button" disabled>Validate Leave</button>
+        </form>
+    
+        <!-- Back Button Section -->
+        <div class="back-button-container">
+            <a href="{{ url_for('coordinator_dashboard') }}" class="back-button">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Handle Date Selection and Fetch Events
+        document.getElementById('select-date-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            const date = document.getElementById('date').value;
+
+            // Fetch events for the selected date
+            fetch('/fetch-events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.events && data.events.length > 0) {
+                    const eventDropdown = document.getElementById('event'); // Corrected ID
+                    eventDropdown.innerHTML = '<option value="" disabled selected>Select Event</option>'; // Clear existing options
+
+                    // Populate dropdown with fetched events
+                    data.events.forEach(event => {
+                        const option = document.createElement('option');
+                        option.value = event.id; // Use event ID as value
+                        option.textContent = `${event.name} (${event.start_time} - ${event.end_time})`; // Display event details
+                        eventDropdown.appendChild(option);
+                    });
+
+                    // Enable the dropdown and submit button
+                    eventDropdown.disabled = false;
+                    document.getElementById('apply-button').disabled = false;
+                    document.getElementById('apply-button').classList.remove('disabled');
+                } else {
+                    alert('No events found for the selected date.');
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching events:', err);
+                alert('Error fetching events. Please try again.');
+            });
+        });
+    </script>
+
+</body>
+</html>

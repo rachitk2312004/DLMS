@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Campus Bites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* About Us Page */
+        .about-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .about-container h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-container p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555555;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .about-container ul {
+            list-style-type: disc;
+            padding-left: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .about-container ul li {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: #333333;
+        }
+        
+        .about-container img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+      <!-- Navbar -->
+   <header class="navbar">
+    <div class="logo">
+        <h1>Event and Duty Leave Management</h1>
+    </div>
+</header>
+    <main class="about-container">
+        <h1>About Us</h1>
+        <p>We aim to streamline leave management with tools that offer convenience and real-time insights.</p>
+        <p><strong>Why Choose Us?</strong></p>
+        <ul>
+            <li>Submit leave applications with ease.</li>
+            <li>Automated approval workflows for coordinators.</li>
+            <li>Instant notifications for application status updates.</li>
+            <li>Track leave history for better management.</li>
+        </ul>
+        <p><strong>Real-Time Leave Tracking</strong></p>
+        <ul>
+            <li>Stay updated on pending and approved leave requests.</li>
+            <li>View real-time status of each leave application.</li>
+            <li>Quickly identify leave trends and patterns.</li>
+            <li>Efficient resource planning for coordinators.</li>
+        </ul>
+        <p><strong>Customizable Notifications & Alerts</strong></p>
+        <ul>
+            <li>Get notified about pending leave approvals or rejections.</li>
+            <li>Receive reminders for upcoming or expired leaves.</li>
+            <li>Automatic email or in-app alerts for important updates.</li>
+            <li>Ensure all stakeholders are always informed.</li>
+        </ul>
+    </main>
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('index') }}">Home</a> | 
+                <a href="{{ url_for('about_us') }}">About Us</a> | 
+                <a href="{{ url_for('contact_us') }}">Contact Us</a> | 
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

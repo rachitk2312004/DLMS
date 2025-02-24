@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duty Leave Management - Coordinator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <!-- Landing Page Layout -->
+    <main class="landing-container">
+        <!-- Left Section: Text Content -->
+        <div class="text-section">
+            <h1>Manage Duty Leaves Efficiently</h1>
+            <p>"Login or register to approve and track student duty leaves seamlessly."</p>
+        </div>
+
+        <!-- Right Section: Forms Section -->
+        <div class="forms-section">
+            <div class="form-card">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Coordinator Login Form -->
+                <div class="form-section" id="coordinator-login-section">
+                    <h2>Coordinator Login</h2>
+                    <form method="POST" action="{{ url_for('login_coordinator') }}">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+            
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+            
+                        <button type="submit">Login</button>
+                    </form>
+                    <div class="slider-bar">
+                        <span><a href="{{ url_for('register_coordinator') }}">Register</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('index') }}">Home</a> | 
+                <a href="{{ url_for('about_us') }}">About Us</a> | 
+                <a href="{{ url_for('contact_us') }}">Contact Us</a> | 
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

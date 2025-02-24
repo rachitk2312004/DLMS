@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Events</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='cd.css') }}">
+    <style>
+        /* Back Button Styling */
+        .back-button {
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Flash Message Styling */
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 16px;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .flash-message.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .flash-message.warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+
+        .flash-message.danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .flash-message.info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Join Events</h1>
+    
+        <!-- Flash messages for user feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
+        <!-- Upcoming Events Section -->
+        <div class="dashboard-section">
+            <h2>Upcoming Events
+                {% if upcoming_events %}
+                    <button class="toggle-button bcd" onclick="toggleList('upcoming-events-table')">Show</button>
+                {% endif %}
+            </h2>
+            {% if upcoming_events %}
+                <table class="event-table" id="upcoming-events-table">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Type</th>
+                            <th>Venue</th>
+                            <th>Date</th>
+                            <th>Timings</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in upcoming_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.type }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.timings }}</td>
+                            <td>
+                                <form action="{{ url_for('register_event', event_id=event.id) }}" method="POST">
+                                    <button type="submit" class="button">Join</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No upcoming events available.</p>
+            {% endif %}
+        </div>
+    
+        <!-- Participated Events Section -->
+        <div class="dashboard-section">
+            <h2>Participated Events
+                {% if participated_events %}
+                    <button class="toggle-button bcd" onclick="toggleList('participated-events-table')">Show</button>
+                {% endif %}
+            </h2>
+            {% if participated_events %}
+                <table class="event-table" id="participated-events-table">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Type</th>
+                            <th>Venue</th>
+                            <th>Date</th>
+                            <th>Timings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in participated_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.type }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.timings }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No participated events found.</p>
+            {% endif %}
+        </div>
+    
+        <!-- Live Events Section -->
+        <div class="dashboard-section">
+            <h2>Live Events
+                {% if live_events %}
+                    <button class="toggle-button bcd" onclick="toggleList('live-events-table')">Show</button>
+                {% endif %}
+            </h2>
+            {% if live_events %}
+                <table class="event-table" id="live-events-table">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Type</th>
+                            <th>Venue</th>
+                            <th>Date</th>
+                            <th>Timings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in live_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.type }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.timings }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No live events currently.</p>
+            {% endif %}
+        </div>
+    
+        <!-- Past Events Section -->
+        <div class="dashboard-section">
+            <h2>Past Events
+                {% if past_events %}
+                    <button class="toggle-button bcd" onclick="toggleList('past-events-table')">Show</button>
+                {% endif %}
+            </h2>
+            {% if past_events %}
+                <table class="event-table" id="past-events-table">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Type</th>
+                            <th>Venue</th>
+                            <th>Date</th>
+                            <th>Timings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in past_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.type }}</td>
+                            <td>{{ event.venue }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.timings }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No past events available.</p>
+            {% endif %}
+        </div>
+    
+        <!-- Navigation to Student Dashboard -->
+        <div class="back-button-container">
+            <a href="{{ url_for('student_dashboard') }}" class="back-button">Back to Dashboard</a>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle table visibility
+        function toggleList(tableId) {
+            const table = document.getElementById(tableId);
+            const toggleButton = table.previousElementSibling.querySelector('.toggle-button');
+            if (table.classList.contains('visible')) {
+                table.classList.remove('visible');
+                toggleButton.textContent = 'Show';
+            } else {
+                table.classList.add('visible');
+                toggleButton.textContent = 'Hide';
+            }
+        }
+    </script>
+</body>
+</html>

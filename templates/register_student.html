@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duty Leave Management - Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const message = document.getElementById('password-message');
+    
+            // Define validation rules
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecialChar = /[@$!%*?&#]/.test(password);
+            const isLengthValid = password.length >= 8;
+    
+            // Create a message based on validation
+            let messageText = [];
+            if (!hasUppercase) messageText.push("uppercase letter");
+            if (!hasLowercase) messageText.push("lowercase letter");
+            if (!hasNumber) messageText.push("number");
+            if (!hasSpecialChar) messageText.push("special character");
+            if (!isLengthValid) messageText.push("at least 8 characters");
+    
+            // Update the message and color
+            if (messageText.length > 0) {
+                message.textContent = `Password must include: ${messageText.join(", ")}.`;
+                message.style.color = "red"; // Red for incomplete validation
+            } else {
+                message.textContent = "Password is strong!";
+                message.style.color = "green"; // Green for valid password
+            }
+    
+            // Return true if all conditions are met
+            return hasUppercase && hasLowercase && hasNumber && hasSpecialChar && isLengthValid;
+        }
+    
+        function validateForm() {
+            return validatePassword();
+        }
+    
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 10000); // 10 seconds
+            });
+        }
+    
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+    
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <!-- Landing Page Layout -->
+    <main class="landing-container">
+        <!-- Left Section: Text Content -->
+        <div class="text-section">
+            <h1>Manage Your Duty Leaves Easily</h1>
+            <p>"Login or register to apply for and track your duty leaves effortlessly."</p>
+        </div>
+
+        <!-- Right Section: Forms Section -->
+        <div class="forms-section">
+            <div class="form-card">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Student Registration Form -->
+                <div class="form-section" id="student-registration-section">
+                    <h2>Student Registration</h2>
+
+                    <!-- Form to Send OTP -->
+                    <form method="POST" action="{{ url_for('send_otp_route') }}" id="otp-form">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                        <button type="submit" id="send-otp">Send OTP</button>
+                    </form>
+
+                    <!-- Form to Register After OTP is Sent -->
+                    <form method="POST" action="{{ url_for('register_student') }}" id="register-form" style="display: none;" onsubmit="return validateForm()">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+
+                        <label for="uid">UID:</label>
+                        <input type="text" id="uid" name="uid" placeholder="Enter your unique student ID" required>
+
+                        <label for="email-register">Email:</label>
+                        <input type="email" id="email-register" name="email" readonly>
+
+                        <label for="otp">Enter OTP:</label>
+                        <input type="text" id="otp" name="otp" placeholder="Enter the OTP sent to your email" required>
+
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" onkeyup="validatePassword()" placeholder="Create a strong password" required>
+                        <p id="password-message" style="color: red;"></p>
+
+                        <button type="submit">Register as Student</button>
+                    </form>
+
+                    <div class="slider-bar">
+                        <span><a href="{{ url_for('login_student') }}">Already registered? Login here</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+            <div class="footer-links">
+                <a href="{{ url_for('index') }}">Home</a> | 
+                <a href="{{ url_for('about_us') }}">About Us</a> | 
+                <a href="{{ url_for('contact_us') }}">Contact Us</a> | 
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Show the registration form after sending OTP
+        const otpButton = document.getElementById('send-otp');
+        const registerForm = document.getElementById('register-form');
+        const otpForm = document.getElementById('otp-form');
+
+        otpButton.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Disable the button to prevent multiple clicks
+            otpButton.disabled = true;
+            otpButton.textContent = "Sending...";
+
+            // Send the email to the server to trigger OTP
+            const email = document.getElementById('email').value;
+            fetch("{{ url_for('send_otp_route') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `email=${encodeURIComponent(email)}`,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("OTP sent to your email!");
+                        // Hide the OTP form and show the registration form
+                        otpForm.style.display = 'none';
+                        registerForm.style.display = 'block';
+
+                        // Set email for registration and make it readonly
+                        const emailRegister = document.getElementById('email-register');
+                        emailRegister.value = email;
+                        emailRegister.readOnly = true; // Prevent editing
+                    } else {
+                        alert("Failed to send OTP. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending OTP:", error);
+                    alert("An error occurred while sending OTP. Please try again.");
+                })
+                .finally(() => {
+                    // Re-enable the button after the alert
+                    otpButton.disabled = false;
+                    otpButton.textContent = "Send OTP";
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ event_name }} Mark Attendance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .search-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .search-container input {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+
+        /* General styling for container */
+        .container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            height: 65vh;
+        }
+
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Button styling */
+        .button {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Aligning buttons to the right */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .back-button-container {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    margin-top: 20px; /* Adds spacing above the container */
+}
+
+.update-button-container {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    margin-top: 20px; /* Adds spacing above the button */
+}
+
+        .back-button {
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Search container styling */
+        .search-container {
+            text-align: right;
+        }
+
+        .search-container input {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <h1>Event and Duty Leave Management</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Flash messages for user feedback -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h1 style="text-align: center;">{{ event_name }} Registrations</h1>
+
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="searchInput" 
+                onkeyup="filterTable()" 
+                placeholder="Search by name or UID..." 
+            />
+        </div>
+
+        <form method="POST">
+            <table id="registrationTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>UID</th>
+                        <th>Attendance Status</th>
+                        <th>Mark Attendance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registration in registrations %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ registration.name }}</td>
+                        <td>{{ registration.uid }}</td>
+                        <td>{{ registration.attendance }}</td>
+                        <td>
+                            <select name="attendance">
+                                <option value="{{ registration.registration_id }}-Not Marked" {% if registration.attendance == 'Not Marked' or registration.attendance == '' %}selected{% endif %}>Not Marked</option>
+                                <option value="{{ registration.registration_id }}-Present" {% if registration.attendance == 'Present' %}selected{% endif %}>Present</option>
+                                <option value="{{ registration.registration_id }}-Absent" {% if registration.attendance != 'Present' and registration.attendance != 'Not Marked' %}selected{% endif %}>Absent</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="update-button-container">
+                <button type="submit" class="button">Update Attendance</button>
+            </div>
+        </form>
+
+        <div class="back-button-container">
+            <a href="/coordinator_dashboard" class="back-button">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
+            <p>Streamline your academic leave processes with ease and transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Function to auto-dismiss flash messages after 10 seconds
+        function dismissFlashMessages() {
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0'; // Fade out
+                    setTimeout(() => {
+                        message.style.display = 'none'; // Hide after fade
+                    }, 1000); // Wait for the fade-out animation to complete
+                }, 10000); // 10 seconds
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = dismissFlashMessages;
+
+        // Function to filter the table based on search input
+        function filterTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("registrationTable");
+            const rows = table.getElementsByTagName("tr");
+            let firstMatch = null;
+
+            // Clear previous highlights
+            clearHighlights();
+
+            for (let i = 1; i < rows.length; i++) { // Skip the header row
+                const nameCell = rows[i].getElementsByTagName("td")[1];
+                const uidCell = rows[i].getElementsByTagName("td")[2];
+                if (nameCell || uidCell) {
+                    const name = nameCell.textContent || nameCell.innerText;
+                    const uid = uidCell.textContent || uidCell.innerText;
+
+                    if (name.toLowerCase().includes(filter) || uid.toLowerCase().includes(filter)) {
+                        rows[i].style.display = "";
+                        // Highlight the matching text
+                        if (filter) {
+                            highlightText(nameCell, filter);
+                            highlightText(uidCell, filter);
+                        }
+                        // Save the first match
+                        if (!firstMatch) {
+                            firstMatch = rows[i];
+                        }
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+
+            // Scroll to the first match
+            if (firstMatch) {
+                firstMatch.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+
+        // Function to highlight matching text in a cell
+        function highlightText(cell, filter) {
+            const text = cell.textContent || cell.innerText;
+            const regex = new RegExp(`(${filter})`, 'gi'); // Create a regex to match the filter text
+            const highlightedText = text.replace(regex, '<span class="highlight">$1</span>');
+            cell.innerHTML = highlightedText; // Replace cell content with highlighted HTML
+        }
+
+        // Function to clear highlights
+        function clearHighlights() {
+            const table = document.getElementById("registrationTable");
+            const rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) { // Skip the header row
+                const cells = rows[i].getElementsByTagName("td");
+                for (let cell of cells) {
+                    // Skip dropdown cells (last column)
+                    if (!cell.querySelector("select")) {
+                        cell.innerHTML = cell.textContent || cell.innerText; // Reset to plain text
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
