@@ -520,8 +520,10 @@ def join_event():
         EventRegistration, (Event.id == EventRegistration.event_id) & (EventRegistration.user_id == user_id)
     ).all()
 
+    # Force UTC timezone for consistency
+    current_datetime = datetime.now(timezone.utc)  # Always use UTC
+
     past_events, live_events, upcoming_events, participated_events = [], [], [], []
-    current_datetime = datetime.now()
 
     for event in events:
         event_data = {
@@ -529,27 +531,30 @@ def join_event():
             "name": event.event_name,
             "type": event.event_type,
             "venue": event.venue,
-            "timings": f"{event.start_time} - {event.end_time}",
-            "date": event.date,
+            "timings": f"{event.start_time.strftime('%H:%M')} - {event.end_time.strftime('%H:%M')}",
+            "date": event.date.strftime('%Y-%m-%d'),
             "max_students": event.max_students,
             "registration_count": event.registration_count,
         }
-        event_date = datetime.strptime(event.date, '%Y-%m-%d').date()
-        start_time = event.start_time  # ✅ Use directly
-        end_time = event.end_time  # ✅ Use directly
-        event_start_datetime = datetime.combine(event_date, start_time)
-        event_end_datetime = datetime.combine(event_date, end_time)
-        registered = event.reg_id is not None
 
-        if registered:
-            if current_datetime > event_end_datetime:
+        # Convert event date and times to UTC
+        event_date = event.date  # Assuming it's already a date object
+        event_start_datetime = datetime.combine(event_date, event.start_time).replace(tzinfo=timezone.utc)
+        event_end_datetime = datetime.combine(event_date, event.end_time).replace(tzinfo=timezone.utc)
+        
+        registered = event.reg_id is not None  # Check if user registered
+
+        # Categorization with UTC comparison
+        if current_datetime > event_end_datetime:
+            if registered:
                 past_events.append(event_data)
-            elif event_start_datetime <= current_datetime <= event_end_datetime:
+        elif event_start_datetime <= current_datetime <= event_end_datetime:
+            if registered:
                 live_events.append(event_data)
-            else:
-                participated_events.append(event_data)
         else:
-            if current_datetime < event_start_datetime:
+            if registered:
+                participated_events.append(event_data)
+            else:
                 upcoming_events.append(event_data)
 
     return render_template(
