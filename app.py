@@ -2,7 +2,7 @@ from flask import Flask, send_file, render_template, request, redirect, session,
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 import hashlib
-from datetime import datetime
+from datetime import datetime,timedelta
 import re
 import random
 import smtplib
@@ -291,11 +291,50 @@ def student_dashboard():
 
     user = User.query.get(session['user_id'])
 
-    if user:  # ✅ Ensure user exists before accessing attributes
-        return render_template('student_dashboard.html', name=user.name, uid=user.uid)
-    else:
+    if not user:
         flash("User not found.", "danger")
         return redirect(url_for('index'))
+
+    # Fetch recent participated events
+    participated_events = db.session.query(
+        Event.event_name.label("name"), Event.date
+    ).join(
+        EventRegistration, Event.id == EventRegistration.event_id
+    ).filter(
+        EventRegistration.user_id == user.id
+    ).order_by(
+        Event.date.desc()
+    ).limit(5).all()
+
+    # Fetch last 5 applied duty leaves and their status (within the last 24 hours)
+    duty_leaves = db.session.query(
+        DutyLeave.id, DutyLeave.date, DutyLeave.status, DutyLeave.time_slots, DutyLeave.remarks
+    ).filter(
+        DutyLeave.user_id == user.id,
+        DutyLeave.date >= (datetime.now() - timedelta(hours=24)).strftime('%Y-%m-%d')  # Filter by date
+    ).order_by(
+        DutyLeave.date.desc()
+    ).limit(5).all()
+
+    # Format important messages with DL status
+    important_messages = []
+    for dl in duty_leaves:
+        message = f"Duty Leave ID: {dl.id} - Date: {dl.date} - Time Slots: {dl.time_slots} - Status: {dl.status}"
+        if dl.remarks:
+            message += f" - Remarks: {dl.remarks}"
+        important_messages.append(message)
+
+    # If no duty leaves applied in the last 24 hours, add a default message
+    if not important_messages:
+        important_messages.append("No duty leaves applied in the last 24 hours.")
+
+    return render_template(
+        'student_dashboard.html',
+        name=user.name,
+        uid=user.uid,
+        participated_events=participated_events,
+        important_messages=important_messages
+    )
 
 @app.route('/apply_duty_leave', methods=['GET', 'POST'])
 def apply_duty_leave():
