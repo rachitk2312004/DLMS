@@ -520,10 +520,13 @@ def join_event():
         EventRegistration, (Event.id == EventRegistration.event_id) & (EventRegistration.user_id == user_id)
     ).all()
 
-    # Force UTC timezone for consistency
-    current_datetime = datetime.now(timezone.utc)  # Always use UTC
-
     past_events, live_events, upcoming_events, participated_events = [], [], [], []
+
+    # Define the timezone you want to use (e.g., 'Asia/Kolkata')
+    timezone = pytz.timezone('Asia/Kolkata')
+
+    # Get the current datetime in the specified timezone
+    current_datetime = datetime.now(timezone)
 
     for event in events:
         event_data = {
@@ -531,39 +534,44 @@ def join_event():
             "name": event.event_name,
             "type": event.event_type,
             "venue": event.venue,
-            "timings": f"{event.start_time.strftime('%H:%M')} - {event.end_time.strftime('%H:%M')}",
-            "date": event.date.strftime('%Y-%m-%d'),
+            "timings": f"{event.start_time} - {event.end_time}",
+            "date": event.date,
             "max_students": event.max_students,
             "registration_count": event.registration_count,
         }
 
-        # Convert event date and times to UTC
-        event_date = event.date  # Assuming it's already a date object
-        event_start_datetime = datetime.combine(event_date, event.start_time).replace(tzinfo=timezone.utc)
-        event_end_datetime = datetime.combine(event_date, event.end_time).replace(tzinfo=timezone.utc)
-        
-        registered = event.reg_id is not None  # Check if user registered
+        # Parse event date and times
+        event_date = datetime.strptime(event.date, '%Y-%m-%d').date()
+        start_time = event.start_time  # Use directly
+        end_time = event.end_time  # Use directly
 
-        # Categorization with UTC comparison
-        if current_datetime > event_end_datetime:
-            if registered:
-                past_events.append(event_data)
-        elif event_start_datetime <= current_datetime <= event_end_datetime:
-            if registered:
-                live_events.append(event_data)
-        else:
-            if registered:
-                participated_events.append(event_data)
+        # Combine date and time to create datetime objects
+        event_start_datetime = timezone.localize(datetime.combine(event_date, start_time))
+        event_end_datetime = timezone.localize(datetime.combine(event_date, end_time))
+
+        # Check if the user has registered for the event
+        registered = event.reg_id is not None
+
+        # Categorize the event based on its timing and registration status
+        if registered:
+            if current_datetime > event_end_datetime:
+                past_events.append(event_data)  # Event has ended
+            elif event_start_datetime <= current_datetime <= event_end_datetime:
+                live_events.append(event_data)  # Event is ongoing
             else:
-                upcoming_events.append(event_data)
+                participated_events.append(event_data)  # Event is in the future
+        else:
+            if current_datetime < event_start_datetime:
+                upcoming_events.append(event_data)  # Event is in the future
 
     return render_template(
-        'join_event.html', 
-        upcoming_events=upcoming_events, 
-        live_events=live_events, 
-        past_events=past_events, 
+        'join_event.html',
+        upcoming_events=upcoming_events,
+        live_events=live_events,
+        past_events=past_events,
         participated_events=participated_events
     )
+
 
 
 @app.route('/register_event/<int:event_id>', methods=['POST'])
