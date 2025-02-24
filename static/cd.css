@@ -233,3 +233,19 @@ footer {
         margin: 8px 0; /* Add spacing between links */
     }
 }
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: opacity 1s ease-out; /* Add a fade-out effect */
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
