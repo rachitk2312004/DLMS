@@ -20,23 +20,23 @@ body {
 .navbar {
     background-color: #4CAF50;
     color: white;
-    padding: 20px 0;
+    padding: 15px 0;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .navbar .logo h1 {
-    font-size: 2.5rem;
+    font-size: 2rem; /* Smaller font size for mobile */
     font-weight: bold;
     text-transform: uppercase;
 }
 
 /* Container */
 .container {
-    max-width: 900px;
-    width: 90%;
-    margin: 30px auto;
-    padding: 30px;
+    max-width: 100%; /* Full width for mobile */
+    width: 95%;
+    margin: 20px auto;
+    padding: 15px;
     background-color: #fff;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
@@ -45,8 +45,8 @@ body {
 
 /* Dashboard Section */
 .dashboard-section {
-    margin-bottom: 30px;
-    padding: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f9f9f9;
@@ -54,32 +54,18 @@ body {
 }
 
 .dashboard-section h2 {
-    margin-bottom: 15px;
-}
-
-.button {
-    display: flex;
-    padding: 5px 10px;
-    font-size: 1rem;
-    color: white;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 150px;
-    align-items: center;
-    margin-bottom: 5px;
+    font-size: 1.4rem; /* Smaller font size for mobile */
+    margin-bottom: 10px;
 }
 
 /* Buttons */
+.button,
 .choice_button,
 .logout-button,
 .toggle-button {
     display: inline-block;
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 10px 15px;
+    font-size: 0.9rem; /* Smaller font size for mobile */
     color: white;
     background-color: #4CAF50;
     border: none;
@@ -88,24 +74,20 @@ body {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    width: 100%; /* Full width for mobile */
+    margin: 5px 0; /* Add spacing between buttons */
 }
 
-.bcd {
-    width: 60px;
-}
-
-.choice_button:hover,
 .button:hover,
+.choice_button:hover,
 .logout-button:hover,
 .toggle-button:hover {
     background-color: #45a049;
-    transform: translateY(-4px);
+    transform: translateY(-2px);
 }
 
 .logout-button {
     background-color: #d9534f;
-    width: 150px;
-    margin-top: 20px;
 }
 
 .logout-button:hover {
@@ -113,9 +95,8 @@ body {
 }
 
 .toggle-button {
-    float: right;
     background-color: #007BFF;
-    padding: 5px 10px;
+    padding: 8px 16px;
 }
 
 .toggle-button:hover {
@@ -137,8 +118,9 @@ body {
 .event-table th,
 .event-table td {
     text-align: left;
-    padding: 10px;
+    padding: 8px; /* Smaller padding for mobile */
     border: 1px solid #ddd;
+    font-size: 0.9rem; /* Smaller font size for mobile */
 }
 
 .event-table th {
@@ -157,13 +139,13 @@ body {
 .event-full {
     color: red;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.8rem; /* Smaller font size for mobile */
 }
 
 .no-events {
     color: #777;
     text-align: center;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Smaller font size for mobile */
     margin-top: 10px;
 }
 
@@ -171,17 +153,17 @@ body {
 footer {
     background-color: #333;
     color: white;
-    padding: 20px 0;
+    padding: 15px 0;
     text-align: center;
-    font-size: 1rem;
-    margin-top: 4rem;
+    font-size: 0.9rem; /* Smaller font size for mobile */
+    margin-top: 2rem;
     border-top: 4px solid #4CAF50;
 }
 
 .footer-container {
-    max-width: 1200px;
+    max-width: 100%; /* Full width for mobile */
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 10px;
 }
 
 .footer-container p {
@@ -206,129 +188,48 @@ footer {
 }
 
 /* Responsive Design for Mobile Devices */
-@media (max-width: 768px) {
+@media (max-width: 428px) {
+    /* iPhone 14 Pro Max and similar devices */
     .navbar .logo h1 {
-        font-size: 2rem;
+        font-size: 1.8rem; /* Even smaller font size for smaller screens */
     }
 
     .container {
-        width: 95%;
-        padding: 20px;
+        padding: 10px; /* Smaller padding for smaller screens */
     }
 
     h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem; /* Smaller font size for smaller screens */
     }
 
     h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem; /* Smaller font size for smaller screens */
     }
 
     .button,
     .choice_button,
     .logout-button,
     .toggle-button {
-        font-size: 0.9rem;
-        padding: 8px 15px;
-        width: 100%;
-        margin: 5px 0;
+        font-size: 0.8rem; /* Smaller font size for smaller screens */
+        padding: 8px 12px; /* Smaller padding for smaller screens */
     }
 
     .event-table th,
     .event-table td {
-        font-size: 0.9rem;
-        padding: 8px;
-    }
-
-    .toggle-button {
-        float: none;
-        width: 100%;
-        margin-top: 10px;
+        font-size: 0.8rem; /* Smaller font size for smaller screens */
+        padding: 6px; /* Smaller padding for smaller screens */
     }
 
     .dashboard-section {
-        padding: 15px;
+        padding: 10px; /* Smaller padding for smaller screens */
     }
 
     .footer-container {
-        padding: 0 10px;
+        padding: 0 5px; /* Smaller padding for smaller screens */
     }
 
     .footer-links a {
-        display: block;
-        margin: 10px 0;
-    }
-}
-
-/* Button Styles */
-.button, .button-primary, .button-secondary, .choice_button, .logout-button, .toggle-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    width: auto;
-    margin: 5px;
-}
-
-.button-primary {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
-}
-
-.button-secondary {
-    background-color: transparent;
-    border: 2px solid #4CAF50;
-    color: #4CAF50;
-}
-
-.button-secondary:hover {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.logout-button {
-    background-color: #d9534f;
-}
-
-.logout-button:hover {
-    background-color: #c9302c;
-}
-
-.toggle-button {
-    background-color: #007BFF;
-    padding: 8px 16px;
-}
-
-.toggle-button:hover {
-    background-color: #0056b3;
-}
-
-.button:hover, .button-primary:hover, .button-secondary:hover, .choice_button:hover, .logout-button:hover, .toggle-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Responsive Design for Buttons */
-@media (max-width: 768px) {
-    .button, .button-primary, .button-secondary, .choice_button, .logout-button, .toggle-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-        width: 100%;
-        margin: 5px 0;
-    }
-
-    .toggle-button {
-        float: none;
-        width: 100%;
-        margin-top: 10px;
+        display: block; /* Stack links vertically */
+        margin: 8px 0; /* Add spacing between links */
     }
 }
