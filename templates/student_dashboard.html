@@ -1,59 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        /* Flash Message Styles */
-        .alert {
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            transition: opacity 1s ease-out; /* Add a fade-out effect */
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Container Styling */
+        /* Container */
         .container {
-            max-width: 800px;
-            margin: 50px auto;
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 60px;
+            /* Space between cards */
+            justify-content: center;
+        }
+
+        /* Card Styling for Sections */
+        .left-section,
+        .right-section {
+            flex: 1;
             padding: 20px;
-            background-color: #fff;
+            background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
-            height: 70vh;
         }
 
-        /* Welcome Title */
-        .container h1 {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 30px;
+        .center-section {
+            flex: 2;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Headings */
+        .left-section h2,
+        .center-section h1,
+        .right-section h2 {
+            font-size: 20px;
             color: #2c3e50;
         }
 
-        /* Subtitle or User Info */
-        .container p {
-            font-size: 18px;
-            color: #7f8c8d;
-            margin-bottom: 20px;
+        /* Lists */
+        .left-section ul,
+        .right-section ul {
+            list-style: none;
+            padding: 0;
         }
 
-        /* Dashboard Section */
-        .dashboard-section {
-            margin: 20px 0;
+        .left-section li,
+        .right-section li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 10px;
+                /* Reduce space between cards */
+            }
         }
 
         /* Button Styling */
@@ -68,6 +82,8 @@
             background: linear-gradient(90deg, #3498db, #2980b9);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background 0.3s ease, transform 0.2s ease;
+            margin-bottom: 15px;
+            margin-top: 15px;
         }
 
         .choice_button:hover {
@@ -101,13 +117,15 @@
                 padding: 15px;
             }
 
-            .choice_button, .logout-button {
+            .choice_button,
+            .logout-button {
                 width: 100%;
                 padding: 15px 0;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <header class="navbar">
@@ -116,32 +134,68 @@
         </div>
     </header>
 
+    <!-- Main Container -->
     <div class="container">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
+        <!-- Left Section: Recent Participated Events -->
+        <div class="left-section">
+            <h2>Recent Participated Events</h2>
+            <ul>
+                {% for event in participated_events %}
+                <li>{{ event.name }} <br> ({{ event.date }})</li>
+                {% else %}
+                <li>No events participated yet.</li>
                 {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Center Section: Dashboard Content -->
+        <div class="center-section">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
             {% endif %}
-        {% endwith %}
-
-        <h1>Welcome {{ name }} (UID: {{ uid }})</h1>
-        <p>Welcome to your student dashboard, where you can easily manage your duties and events.</p>
-
-        <div class="dashboard-section">
-            <a href="/apply_duty_leave" class="choice_button">Apply for Duty Leave</a>
+            {% endwith %}
+            <br>
+            <h1>Welcome {{ name }} (UID: {{ uid }})</h1>
+            <p>Manage your events and duty leave effortlessly with just a click!</p>
+            <br>
+            <hr>
+            <!-- Join an Event Section -->
+            <div class="dashboard-section">
+                <h2>Exciting Events Await! 🎉</h2>
+                <p>Want to participate in an upcoming event? Click below to join now!</p>
+                <a href="/join_event" class="choice_button">Join an Event</a>
+            </div>
+            <br>
+            <hr>
+            <!-- Apply for Duty Leave Section -->
+            <div class="dashboard-section">
+                <h2>Need Time Off for an Event? 📝</h2>
+                <p>Applying for duty leave is quick and easy. Click below to get started!</p>
+                <a href="/apply_duty_leave" class="choice_button">Apply for Duty Leave</a>
+            </div>
+            <hr>
+            <a href="/logout" class="logout-button">Logout</a>
         </div>
-
-        <div class="dashboard-section">
-            <a href="/join_event" class="choice_button">Join an Event</a>
+        <!-- Right Section: Important Messages -->
+        <div class="right-section">
+            <h2>Important Messages</h2>
+            <ul>
+                {% for message in important_messages %}
+                <li>{{ message }}</li>
+                {% else %}
+                <li>No important messages.</li>
+                {% endfor %}
+            </ul>
         </div>
-
-        <a href="/logout" class="logout-button">Logout</a>
     </div>
 
+    <!-- Footer -->
     <footer>
         <div class="footer-container">
             <p>&copy; 2025 Duty Leave Management System. Helping coordinators manage student leave efficiently.</p>
@@ -167,4 +221,5 @@
         window.onload = dismissFlashMessages;
     </script>
 </body>
+
 </html>
