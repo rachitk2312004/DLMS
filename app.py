@@ -386,8 +386,15 @@ def apply_duty_leave():
 
 @app.route('/fetch-events', methods=['POST'])
 def fetch_events():
-    current_date = datetime.now().strftime('%Y-%m-%d')  # Get current date
-    current_time = datetime.now().strftime('%H:%M:%S')  # Get current time
+    # Define the timezone you want to use (e.g., 'Asia/Kolkata')
+    timezone = pytz.timezone('Asia/Kolkata')
+
+    # Get the current datetime in the specified timezone
+    current_datetime = datetime.now(timezone)
+
+    # Format current date and time in the desired timezone
+    current_date = current_datetime.strftime('%Y-%m-%d')  # Current date
+    current_time = current_datetime.strftime('%H:%M:%S')  # Current time
 
     if request.is_json:
         data = request.get_json()
@@ -418,7 +425,6 @@ def fetch_events():
         return jsonify({"events": events_data})
 
     return jsonify({"error": "Invalid request"}), 400
-
 
 @app.route('/validate_duty_leave', methods=['GET', 'POST'])
 def validate_duty_leave():
