@@ -19,7 +19,7 @@ import openpyxl.utils
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://dlms_user:780JW7CUaegk9FcXSnmPNgDKh91ai1RU@dpg-cus1uri3esus73fhvp80-a.oregon-postgres.render.com/dlms"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://dlms_ca7f_user:iKXKHL7S9hqJ3XMQnOJ5ohMVpVN84Hud@dpg-cvqvmtre5dus7380ig10-a.oregon-postgres.render.com/dlms_ca7f"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
