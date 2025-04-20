@@ -6,7 +6,18 @@
     <title>{{ event_name }} Registrations</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        /* General styling for container */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         .container {
             width: 600px;
             margin: 50px auto;
@@ -15,7 +26,8 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             position: relative;
-            height: 65vh;
+            height: auto;
+            flex: 1;
         }
 
         /* Table styling */
@@ -79,8 +91,8 @@
 
         .back-button-container {
             display: flex;
-            justify-content: center; /* Centers the button horizontally */
-            margin-top: 20px; /* Adds spacing above the container */
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .button:hover {
@@ -92,7 +104,7 @@
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
-            transition: opacity 1s ease-out; /* Add a fade-out effect */
+            transition: opacity 1s ease-out;
         }
 
         .alert-success {
@@ -104,22 +116,28 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        /* Footer Styling */
+        footer {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
     <script>
-        // Function to auto-dismiss flash messages after 10 seconds
         function dismissFlashMessages() {
             const flashMessages = document.querySelectorAll('.alert');
             flashMessages.forEach(message => {
                 setTimeout(() => {
-                    message.style.opacity = '0'; // Fade out
+                    message.style.opacity = '0';
                     setTimeout(() => {
-                        message.style.display = 'none'; // Hide after fade
-                    }, 1000); // Wait for the fade-out animation to complete
-                }, 10000); // 10 seconds
+                        message.style.display = 'none';
+                    }, 1000);
+                }, 10000);
             });
         }
 
-        // Call the function when the page loads
         window.onload = dismissFlashMessages;
     </script>
 </head>
@@ -133,7 +151,6 @@
 
     <div class="container">
         <br><br>
-        <!-- Flash messages for user feedback -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -144,10 +161,8 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Dynamic Event Name Heading -->
         <h1 style="text-align: center;">{{ event_name }} Registrations</h1>
 
-        <!-- Back and Download buttons at the top-right corner -->
         <div class="top-buttons">
             <a href="{{ url_for('download_registrations', event_id=event_id) }}" class="button">Download Registrations</a>
         </div>
@@ -178,7 +193,6 @@
             {% endif %}
         </div>
 
-        <!-- Back button below the table -->
         <div class="back-button-container">
             <a href="/coordinator_dashboard" class="back-button">Back to Dashboard</a>
         </div>
